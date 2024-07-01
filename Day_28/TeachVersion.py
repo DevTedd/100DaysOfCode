@@ -11,27 +11,45 @@ SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 fG = RED
 reps = 1# number of repitions 
+timer = None
 
 # ---------------------------- TIMER RESET ------------------------------- # 
+
+def reset_timer():
+    window.after_cancel(timer)#stopping the loop 
+    #change title, checkmarks and time
+    title_label.config(text='Timer', fg=RED)
+    runs_done.config(text='')
+    canvas.itemconfig(timer_text, text="00:00")
+    global reps
+    reps = 0
+    
+    
+    
+    
+    
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
 def start_timer():
     global reps
-    if reps == 1 or reps == 3 or reps == 5 or reps == 7:
-        count_down(2*60)
-        reps += 1
-        start_timer()
-    elif reps == 2 or reps == 4 or reps == 6:
-        count_down(5*60)
-        reps += 1
-        start_timer()
-    elif reps == 8:
-        count_down(20*60)
-        reps += 1
-        start_timer()
+    reps +=1
+    
+    work_sec = WORK_MIN * 60
+    SHORT_BREAK_sec = SHORT_BREAK_MIN * 60
+    LONG_BREAK_Sec = LONG_BREAK_MIN * 60
+    
+    if reps % 8 == 0:
+        count_down(LONG_BREAK_Sec)   
+        title_label.config(text='Long Break!', fg=RED)
+    elif reps % 2 == 0:
+        count_down(SHORT_BREAK_sec)
+        title_label.config(text='Short Break!', fg=PINK)
     else:
-        print('Run finished!! Good Job')
+        count_down(work_sec)
+        title_label.config(text='Work Sesh - Stay Focused', fg=YELLOW)
+        
+    
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 
@@ -46,7 +64,18 @@ def count_down(count):
     
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
-        window.after(1000, count_down, count - 1)
+        global timer
+        timer = window.after(1000, count_down, count - 1)
+    else:
+        start_timer()
+        # if reps % 2 == 0:
+        #     runs_done.config(text='✓')
+        marks = ""
+        work_sesh = math.floor(reps/2)
+        for x in range(work_sesh):
+            marks += '✓'
+        runs_done.config(text=marks)
+            
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -71,11 +100,11 @@ canvas.grid(column=1,row=1)
 #Buttons
 start_button = Button(text = 'Start Timer', highlightthickness=0,command=start_timer)
 start_button.grid(column=0,row=2)
-reset_button = Button(text = 'Reset Timer', highlightthickness=0)
+reset_button = Button(text = 'Reset Timer', highlightthickness=0, command=reset_timer)
 reset_button.grid(column=2,row=2)
 
 #Checkbox
-runs_done = Label(text='✓',fg=GREEN, bg=RED)
+runs_done = Label(fg=GREEN, bg=RED)
 runs_done.grid(column=1, row=3)
 
 
