@@ -3,5 +3,9 @@
 #     file.read()
     
 #Key Error
-a_dic = {"key":"value"}
-value = a_dic["key2"]
+# a_dic = {"key":"value"}
+# value = a_dic["key2"]
+
+#IndexError
+fruit_list = ['Apple','Banana','Pear']
+fruit = fruit_list[3]
